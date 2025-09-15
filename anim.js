@@ -15,7 +15,7 @@ var lyricsData = [
   { text: "In the mood for the flowers love", time: 59 },
   { text: "That vision", time: 67 },
   { text: "Really strong, blew my mind", time: 72 },
-  { text: "Silence Let me see what it was", time: 78 },
+  { text: "Silence let me see what it was", time: 78 },
   { text: "I only want to live in clouds", time: 83 },
   { text: "Where I'm now? I don't know why", time: 91 },
   { text: "Nice butterflies in my hands", time: 97 },
@@ -29,12 +29,14 @@ var lyricsData = [
   { text: "Where I'm now? I don't know why", time: 169 },
   { text: "Nice butterflies in my hands", time: 176 },
   { text: "Too much light for twilight", time: 183 },
-  { text: "In the mood for the flowers", time: 188 },
-  { text: "Love.", time: 140 },
+  { text: "In the mood for the flowers love", time: 188 },
+  { text: "Love.", time: 194 } // 🔹 Corregido, antes estaba mal en 140
 ];
 
 // Animar las letras
 function updateLyrics() {
+  if (!audio || !lyrics) return;
+
   var time = Math.floor(audio.currentTime);
   var currentLine = lyricsData.find(
     (line) => time >= line.time && time < line.time + 6
@@ -42,27 +44,32 @@ function updateLyrics() {
 
   if (currentLine) {
     // Calcula la opacidad basada en el tiempo en la línea actual
-    var fadeInDuration = 0.1; // Duración del efecto de aparición en segundos
+    var fadeInDuration = 0.5; // Duración del efecto de aparición en segundos
     var opacity = Math.min(1, (time - currentLine.time) / fadeInDuration);
 
     // Aplica el efecto de aparición
     lyrics.style.opacity = opacity;
-    lyrics.innerHTML = currentLine.text;
+    lyrics.textContent = currentLine.text;
   } else {
     // Restablece la opacidad y el contenido si no hay una línea actual
     lyrics.style.opacity = 0;
-    lyrics.innerHTML = "";
+    lyrics.textContent = "";
   }
 }
 
-setInterval(updateLyrics, 1000);
+// Usar requestAnimationFrame en lugar de setInterval para mayor fluidez
+function animate() {
+  updateLyrics();
+  requestAnimationFrame(animate);
+}
+animate();
 
-//funcion titulo
 // Función para ocultar el título después de 216 segundos
 function ocultarTitulo() {
   var titulo = document.querySelector(".titulo");
-  titulo.style.animation =
-    "fadeOut 3s ease-in-out forwards"; /* Duración y función de temporización de la desaparición */
+  if (!titulo) return;
+
+  titulo.style.animation = "fadeOut 3s ease-in-out forwards";
   setTimeout(function () {
     titulo.style.display = "none";
   }, 3000); // Espera 3 segundos antes de ocultar completamente
